@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project List</title>
+    <style>
+        /* Background Gradient */
+        body {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Container for content */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 1200px; /* Optional: limit container width */
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #ffeb3b;
+            margin-bottom: 30px;
+        }
+
+        /* Search and Filter Form */
+        .form-inline {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .form-inline input,
+        .form-inline select {
+            flex: 1;
+            min-width: 200px;
+            border: 1px solid #00bcd4;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #ffffff; /* White background for input/select */
+            color: #333333; /* Dark text color for contrast */
+        }
+
+        .form-inline input::placeholder {
+            color: #999999;
+        }
+
+        .form-inline button {
+            background-color: #00bcd4;
+            border-color: #00bcd4;
+            color: #ffffff;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .form-inline button:hover {
+            background-color: #0097a7;
+            border-color: #0097a7;
+        }
+
+        /* Card styles */
+        .card {
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-img-top {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-title {
+            color: #ffeb3b;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .btn-outline-secondary {
+            color: #00bcd4;
+            border-color: #00bcd4;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #00bcd4;
+            color: #ffffff;
+            border-color: #00bcd4;
+        }
+
+        /* Pagination styling */
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .pagination .page-link {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Projects</h2>
+
+        <!-- Search and Filter Form -->
+        <form method="get" class="form-inline mb-3">
+            <input type="text" name="filter" placeholder="Search..." value="{{ filter_option }}">
+            <select name="sort">
+                <option value="created_at" {% if sort_option == 'created_at' %}selected{% endif %}>Sort by Date</option>
+                <option value="budget" {% if sort_option == 'budget' %}selected{% endif %}>Sort by Budget</option>
+                <!-- Add more sorting options if needed -->
+            </select>
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Project List -->
+        <div class="row">
+            {% for project in projects %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ project.title }}</h5>
+                        <p class="card-text">{{ project.description|truncatewords:20 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Budget: ${{ project.budget }}</small>
+                            <a href="{% url 'project_detail' project.id %}" class="btn btn-outline-secondary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if projects.has_previous %}
+                <a class="page-link" href="?page=1">First</a>
+                <a class="page-link" href="?page={{ projects.previous_page_number }}">Previous</a>
+            {% endif %}
+            {% for num in projects.paginator.page_range %}
+                {% if projects.number == num %}
+                    <span class="page-item active"><span class="page-link">{{ num }}</span></span>
+                {% else %}
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if projects.has_next %}
+                <a class="page-link" href="?page={{ projects.next_page_number }}">Next</a>
+                <a class="page-link" href="?page={{ projects.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

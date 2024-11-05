@@ -1,0 +1,32 @@
+<form action="{% url 'create-checkout-session' %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" id="checkout-button">Pay Now</button>
+  </form>
+  
+  <script src="https://js.stripe.com/v3/"></script>
+  <script type="text/javascript">
+    const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+    const checkoutButton = document.getElementById("checkout-button");
+  
+    checkoutButton.addEventListener("click", function () {
+      fetch("{% url 'create-checkout-session' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+        .then((response) => response.json())
+        .then((session) => {
+          return stripe.redirectToCheckout({ sessionId: session.id });
+        })
+        .then((result) => {
+          if (result.error) {
+            alert(result.error.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    });
+  </script>
+  

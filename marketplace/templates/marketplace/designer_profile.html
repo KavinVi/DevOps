@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ designer.username }}'s Portfolio</h2>
+<ul>
+  {% for item in portfolio %}
+    <li>
+      <img src="{{ item.image.url }}" alt="{{ item.title }}">
+      <h3>{{ item.title }}</h3>
+      <p>{{ item.description }}</p>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

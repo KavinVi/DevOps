@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>My Messages</h2>
+<ul>
+  {% for message in messages %}
+    <li><strong>{{ message.sender }}:</strong> {{ message.content }} <em>{{ message.timestamp }}</em></li>
+  {% endfor %}
+</ul>
+{% endblock %}
